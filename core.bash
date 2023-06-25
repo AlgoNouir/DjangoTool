@@ -4,15 +4,18 @@
 # a tool for django
 
 # create project
-PS3="Enter a number: "
 
-items=(
-    'create project'
-    'start app'
-)
+function create_project () {
+    read -p "insert your project name: " name
+    django-admin startproject "${name^^}" .
+    mkdir Apps
+}
 
-select character in "${items[@]}"
-do
-    echo "Selected character: $character"
-    echo "Selected number: $REPLY"
-done
+
+
+# core
+case $1 in
+    startproject)
+        create_project
+    ;;
+esac
