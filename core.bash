@@ -27,7 +27,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-d=v=t!s=yyho4i(r597@*28rs0m^d$dcsz(kjx&*@*5)s)=vv3'
+SECRET_KEY = 'django-insecure-d=v=t!s=yyho4i(r597@*28rs0m^d$*dcsz(kjx&*@*5)s)=vv3'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -187,18 +187,43 @@ function django_create_project () {
     mkdir Apps
     echo "$djangoSetting"  > "./${name^^}/settings.py" 
     echo ALGO_DJANGO_TOOL="installed" >> .env
+    echo ALGO_DJANGO_NAME="${name^^}" >> .env
 }
 
 function django_create_app () {
-    cd Apps || mkdir Apps && cd Apps || exit
+    for item in "${@}"; do
+        if [ -d "./Apps/${item^}" ];then
+            echo "${item^} already exsist"
+        else
+            mkdir "./Apps/${item^}"
+            python3 manage.py startapp "${item^}" "./Apps/${item^}"
+            rm -rf "./Apps/${item^}/admin.py"
+            rm -rf "./Apps/${item^}/tests.py"
+            rm -rf "./Apps/${item^}/__init__.py"
+            rm -rf "./Apps/${item^}/migrations/"
+
+            cat > "./Apps/${item^}/apps.py"<<EOM
+from django.apps import AppConfig
+
+
+class HelloConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'Apps.${item^}'
+EOM
+        
+
+            echo "app ${item^} installed"
+        fi
+    done
+    
+
+    # 
 }
 
 
 function test () {
     echo "$1" # arguments are accessible through $1, $2,...
 }
-
-
 
 
 
@@ -228,7 +253,7 @@ case $1 in
                 fi
             ;;
             createapp)
-                django_create_app
+                django_create_app "${@:3}"
             ;;
         esac
     ;;
