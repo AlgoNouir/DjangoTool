@@ -145,7 +145,7 @@ WSGI_APPLICATION = 'SERVER.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / '../data/db.sqlite3',
+        'NAME': BASE_DIR / 'data/db.sqlite3',
     }
 }
 
@@ -177,7 +177,7 @@ function getEnv {
 }
 
 function django_create_project () {
-    read -p "insert your project name: " name
+    read -p "insert your project name: [SERVER] " name
     if [ "$name" = "" ];then
         name="server"
     fi
@@ -185,6 +185,7 @@ function django_create_project () {
     python3 -m pip install django django-cors-headers djangorestframework
     django-admin startproject "${name^^}" .
     mkdir Apps
+    mkdir data
     echo "$djangoSetting"  > "./${name^^}/settings.py" 
     echo ALGO_DJANGO_TOOL="installed" >> .env
     echo ALGO_DJANGO_NAME="${name^^}" >> .env
@@ -221,8 +222,10 @@ EOM
 }
 
 
-function test () {
-    echo "$1" # arguments are accessible through $1, $2,...
+function django_rebase () {
+    python3 manage.py makemigrations
+    python3 manage.py migrate --run-syncdb
+    python3 manage.py createsuperuser
 }
 
 
@@ -254,6 +257,9 @@ case $1 in
             ;;
             createapp)
                 django_create_app "${@:3}"
+            ;;
+            rebase)
+                django_rebase
             ;;
         esac
     ;;
