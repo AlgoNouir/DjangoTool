@@ -214,7 +214,6 @@ EOM
         
 
             echo "app Core installed"
-        fi
     fi
     for item in "${@}"; do
         if [ -d "./Apps/${item^}" ];then
@@ -231,7 +230,7 @@ EOM
 from django.apps import AppConfig
 
 
-class HelloConfig(AppConfig):
+class ${item^}Config(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'Apps.${item^}'
 EOM
