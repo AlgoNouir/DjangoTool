@@ -192,6 +192,30 @@ function django_create_project () {
 }
 
 function django_create_app () {
+    if [ -d "./Apps/Core" ]; then
+        echo "add another files"
+    else
+
+            mkdir "./Apps/Core"
+            python3 manage.py startapp "Core" "./Apps/Core"
+            rm -rf "./Apps/Core/admin.py"
+            rm -rf "./Apps/Core/tests.py"
+            rm -rf "./Apps/Core/__init__.py"
+            rm -rf "./Apps/Core/migrations/"
+
+            cat > "./Apps/Core/apps.py"<<EOM
+from django.apps import AppConfig
+
+
+class CoreConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'Apps.Core'
+EOM
+        
+
+            echo "app Core installed"
+        fi
+    fi
     for item in "${@}"; do
         if [ -d "./Apps/${item^}" ];then
             echo "${item^} already exsist"
