@@ -90,7 +90,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    *DEPENDENCIES
+    *DEPENDENCIES,
+    *MAIN_APPS
 ]
 
 MIDDLEWARE = [
@@ -181,7 +182,6 @@ function django_create_project () {
     if [ "$name" = "" ];then
         name="server"
     fi
-    pipenv shell
     python3 -m pip install django django-cors-headers djangorestframework
     django-admin startproject "${name^^}" .
     mkdir Apps
@@ -189,6 +189,8 @@ function django_create_project () {
     echo "$djangoSetting"  > "./${name^^}/settings.py" 
     echo ALGO_DJANGO_TOOL="installed" >> .env
     echo ALGO_DJANGO_NAME="${name^^}" >> .env
+    clear
+    echo "your django project created successfully"
 }
 
 function django_create_app () {
@@ -211,7 +213,7 @@ class CoreConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'Apps.Core'
 EOM
-        
+            sed -i "s/MAIN_APPS = [\n/MAIN_APPS = [\n'Core'," "./$(getEnv ALGO_DJANGO_NAME)/settings.py"
 
             echo "app Core installed"
     fi
@@ -236,6 +238,7 @@ class ${item^}Config(AppConfig):
 EOM
         
 
+            sed "s/MAIN_APPS = [\n/MAIN_APPS = [\n'${item^}'" "./$(getEnv ALGO_DJANGO_NAME)/settings.py"
             echo "app ${item^} installed"
         fi
     done
